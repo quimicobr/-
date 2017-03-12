@@ -2,6 +2,6 @@
 
 Projet de reconnaissance de visage
 
-Code LBP_matlab est le principal
-Fonctions LBP et decoupe
+LBP_matlab - codigo principal
+Funçoes - LBM, decoupe, chicarre, matpoids
 
