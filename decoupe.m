@@ -1,4 +1,9 @@
-function [hist, maxi] = decoupe(LBP_im, k)    
+function [hist, maxi] = decoupe(LBP_im, k)   
+%Cette fonction prend à l'entrée le LBP d'une image et la découpe en k x k
+%rectangles de même taille. Puis, elle fait l'histogramme de chaque
+%rectangle et l'envoie à la sortie dans la cellule hist, qui a dimension k
+%x k. Aussi, elle envoie à la sortie la valeur maximale de tous les
+%histogrammes de la cellule.
 
 edges = 0:256;
 maxi = 0;
