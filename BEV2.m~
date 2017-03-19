@@ -460,15 +460,36 @@ end
 fprintf('Verification sp finished\n');
 
 figure,
-plot(Pf_tot_hol, Pv_tot_hol, '-g', Pf_tot_3, Pv_tot_3, '-r', ...
-    Pf_tot_5, Pv_tot_5, '-b', Pf_tot_7, Pv_tot_7, '-m');
-xlim([0 1]);
-ylim([0.4 1])
-legend('hollistic', '3x3', '5x5', '7x7')
+plot(Pf_tot_hol, Pv_tot_hol, '-.g', Pf_tot_3, Pv_tot_3, '-.r', ...
+    Pf_tot_5, Pv_tot_5, '-.b', Pf_tot_7, Pv_tot_7, '-.m');
+legend('hollistic', ')
 xlabel('False positive rate')
 ylabel('True positive rate')
 title('ROC')
 grid on
 grid minor
 
+% figure,
+% plot(Pf_tot_3, Pv_tot_3, '-*');
+% xlabel('False positive rate')
+% ylabel('True positive rate')
+% title('ROC sp enh 3')
+% grid on
+% grid minor
+% 
+% figure,
+% plot(Pf_tot_5, Pv_tot_5, '-*');
+% xlabel('False positive rate')
+% ylabel('True positive rate')
+% title('ROC sp enh 5')
+% grid on
+% grid minor
+% 
+% figure,
+% plot(Pf_tot_7, Pv_tot_7, '-*');
+% xlabel('False positive rate')
+% ylabel('True positive rate')
+% title('ROC sp enh 7')
+% grid on
+% grid minor
 
