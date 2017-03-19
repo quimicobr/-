@@ -348,7 +348,7 @@ fprintf('ChiSquare spatially enhanced 7x7 finished\n');
 % taux_ec_type = std(taux);
 
 
-%% Reconnaissance 'spatially enhanced'
+%% Reconnaissance 'spatially enhanced' 3x3
 % 
  essais_sp_enh = 10;
  taux_sp_enh = zeros(essais_sp_enh,1);
@@ -369,7 +369,7 @@ fprintf('ChiSquare spatially enhanced 7x7 finished\n');
                      for j = 1:nFaces
                          if ismember(j, galerie) 
                              d = d + 1;
-                             comparaison(d) = chi_carre_sp_enh_3((k-1)*nFaces + ...
+                             comparaison(d) = chi_carre_hol((k-1)*nFaces + ...
                                  l,(i-1)*nFaces + j);
                          end
                      end
@@ -391,7 +391,7 @@ fprintf('ChiSquare spatially enhanced 7x7 finished\n');
      taux_sp_enh(h) = counter/(nPersonnes*6);
  end
  
- taux_moy_sp_enh = mean(taux_sp_enh);
- taux_ec_type_sp_enh = std(taux_sp_enh);
+ taux_moy = mean(taux_sp_enh);
+ taux_ec_type = std(taux_sp_enh);
  
  

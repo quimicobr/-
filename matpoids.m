@@ -14,4 +14,7 @@ for i = 1:k
 end
 
 m = m/s;
+
+
+%m = 1/k^2*ones(k);
 end
