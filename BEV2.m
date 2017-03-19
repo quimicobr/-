@@ -15,7 +15,7 @@ if ~exist('images', 'var')
     images = loadImages();
 end
 
-fprintf('Images chargées\n');
+fprintf('Images chargees\n');
 
 %% Application de la methode LBP "hollistic"
 
@@ -90,12 +90,12 @@ if ~exist('hist_sp_enh.mat', 'file')
             n = 0;
             for k = div_dim
                 n = n+1;
-                [hist_sp_enh{i,j,n}, max(i,j,n)] = decoupe(...
+                [hist_sp_enh{i,j,n}, maxi(i,j,n)] = decoupe(...
                     LBP_im{i,j}, k);
             end
         end
     end
-    save hist_sp_enh.mat hist_sp_enh max;
+    save hist_sp_enh.mat hist_sp_enh maxi;
 else
     load hist_sp_enh;
 end
@@ -168,47 +168,125 @@ end
 fprintf('ChiSquare hollistic finished\n');
 
 %% Reconnaissance
-taux = zeros(
-for h = 1:10
-    galerie = randperm(10,4);
-    for k = 1:nPersonnes
-        for l = 1:nFaces
-            if ~ismember(l, galerie)
-                for i = 1:nPersonnes
-                    difference{k,l}(i) = 0;
-                    for j = 1:nFaces
-                        if ismember(j, galerie)
-                            difference{k,l}(i) = difference{k,l}(i) + ...
-                                chi_carre_hol(nFaces*(k-1) + l, ...
-                                nFaces*(i-1) + j);
+
+if ~exist('taux_recognition.mat', 'file')
+    essai = 10;
+    taux = zeros(essai,1);
+    difference = cell(nPersonnes, nFaces);
+    M = cell(nPersonnes, nFaces);
+    I = cell(nPersonnes, nFaces);
+
+    for h = 1:essai
+        galerie = randperm(nFaces, 4);
+        for k = 1:nPersonnes
+            for l = 1:nFaces
+                if ~ismember(l, galerie)
+                    for i = 1:nPersonnes
+                        difference{k,l}(i) = 0;
+                        for j = 1:nFaces
+                            if ismember(j, galerie)
+                                difference{k,l}(i) = difference{k,l}(i) ...
+                                    + chi_carre_hol(nFaces*(k-1) + l, ...
+                                    nFaces*(i-1) + j);
+                            end
                         end
+                        difference{k,l}(i) = difference{k,l}(i)/4;
                     end
-                    difference{k,l}(i) = difference{k,l}(i)/4;
+                    [M{k,l}, I{k,l}] = min(difference{k,l});
                 end
-                [M{k,l}, I{k,l}] = min(difference{k,l});
             end
         end
-    end
-    
-    counter = 0;
-    for m = 1:nPersonnes
-        for n = 1:nFaces
-            if ~ismember(n, galerie) && I{m, n} == m
-                counter = counter + 1;
+
+        counter = 0;
+        for m = 1:nPersonnes
+            for n = 1:nFaces
+                if ~ismember(n, galerie) && I{m, n} == m
+                    counter = counter + 1;
+                end
             end
         end
+        taux(h) = counter/(nPersonnes*6);
     end
-    taux(h) = counter/(nPersonnes*6);
+
+    taux_moy = mean(taux);
+    taux_ec_type = std(taux);
+    save taux_recognition.mat taux_moy taux_ec_type
+else
+    load taux_recognition
 end
 
-taux_moy = mean(taux);
-taux_ec_type = std(taux);
+fprintf('Recognition finished\n');
 
+%% Verification
 
+% c = (0:0.05:1)';
+% l_c = length(c);
+% Pv = zeros(l_c, 1);
+% Pf = zeros(l_c, 1);
+% essais = 3;
+verif_mat = zeros(size(chi_carre_hol, 1));
 
+% for i = 1:l_c
+%     for j = 1:essais
+% %         G = ceil(10*rand(10,1));
+%         for l = 1:nPersonnes
+%             for k = 2:nFaces
+%                 if chi_carre_col(1,(l-1)*10 + k) <= c(i)
+%                     verif_mat(1,(l-1)*10 + k) = 1;
+%                 end
+%             end
+%             
+%         end
+%     end
+%     Pv(i) = Pv(i)/l_c;
+%     Pf(i) = Pf(i)/l_c;
+% end
+Pv = zeros(nPersonnes, 1);
+Pf = zeros(nPersonnes, 1);
+lim = 1000;
+essai = 3;
+c = 0;
+m = 1;
+while c < lim
+    for n = 1:essai
+        for i = 1:nPersonnes
+            for l = 1:nPersonnes
+                for k = 2:nFaces
+                    if chi_carre_hol((i-1)*nFaces + 1,(l-1)*nFaces + k) ...
+                            <= c
+                        verif_mat((i-1)*nFaces + 1, (l-1)*nFaces + k) = 1;
+                    end
+                end
 
+                if l == i
+                    Pv(i) = sum(verif_mat((i-1)*nFaces + 1, ...
+                        (l-1)*nFaces + 2:(l-1)*nFaces + nFaces))/(nFaces-1);
+                else
+                    Pf(i) = Pf(i) + sum(verif_mat((i-1)*nFaces + 1, ...
+                        (l-1)*nFaces + 2:(l-1)*nFaces + nFaces));
 
+                end
+            end
+            Pf(i) = Pf(i)/((nPersonnes-1)*(nFaces-1));
+        end
+        Pv_tot(m, n) = mean(Pv);
+        Pf_tot(m, n) = mean(Pf);
+    end
+    avg_Pv_tot(m) = mean(Pv_tot(m,:));
+    avg_Pf_tot(m) = mean(Pf_tot(m,:));
+    c = c + 25;
+    m = m + 1;
+end
 
+fprintf('Verification finished\n');
+
+figure,
+plot(avg_Pf_tot, avg_Pv_tot, '-*');
+xlabel('False positive rate')
+ylabel('True positive rate')
+title('ROC')
+grid on
+grid minor
 
 
 
